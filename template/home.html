@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+{% block content %}
+<h1>Upload Picture</h1>
+<form method="post" enctype="multipart/form-data">
+    <input type="file" name="file" required>
+    <select name="filter_type">
+        <option value="grayscale">Grayscale</option>
+        <option value="sepia">Sepia</option>
+        <option value="cartoon">Cartoon</option>
+        <option value="invert">Invert</option>
+        <option value="blur">Blur</option>
+    </select>
+    <button type="submit">Apply Filter</button>
+</form>
+
+{% if result %}
+<h2>Raw</h2>
+<img src="/{{ raw }}" width="300">
+<h2>Processed</h2>
+<img src="/{{ result }}" width="300">
+{% endif %}
+{% endblock %}
