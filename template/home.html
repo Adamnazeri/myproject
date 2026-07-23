@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Home{% endblock %}
 {% block content %}
-<h1>Upload Picture</h1>
+<h1>Upload Picture / Video</h1>
 <form method="post" enctype="multipart/form-data">
     <input type="file" name="file" required>
     <select name="filter_type">
@@ -16,8 +16,17 @@
 
 {% if result %}
 <h2>Raw</h2>
+{% if is_video %}
+<video src="/{{ raw }}" width="400" controls></video>
+{% else %}
 <img src="/{{ raw }}" width="300">
-<h2>Processed</h2>
+{% endif %}
+
+<h2>Hasil</h2>
+{% if is_video %}
+<video src="/{{ result }}" width="400" controls></video>
+{% else %}
 <img src="/{{ result }}" width="300">
+{% endif %}
 {% endif %}
 {% endblock %}
