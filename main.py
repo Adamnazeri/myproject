@@ -4,6 +4,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 import cv2
 import os
+from ultralytics import YOLO
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -13,6 +14,8 @@ os.makedirs("uploads", exist_ok=True)
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 VIDEO_EXT = (".mp4", ".mov", ".avi", ".mkv")
+
+yolo_model = YOLO("yolov8n.pt")
 
 
 def apply_filter_frame(img, filter_type):
@@ -31,6 +34,9 @@ def apply_filter_frame(img, filter_type):
         return cv2.bitwise_not(img)
     elif filter_type == "blur":
         return cv2.GaussianBlur(img, (25, 25), 0)
+    elif filter_type == "yolo":
+        results = yolo_model(img, verbose=False)
+        return results[0].plot()
     else:
         return img
 
