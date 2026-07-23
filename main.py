@@ -61,6 +61,8 @@ async def upload(request: Request, file: UploadFile = File(...), filter_type: st
     is_video = ext in VIDEO_EXT
 
     if is_video:
+        temp_filename = f"temp_{os.path.splitext(file.filename)[0]}.mp4"
+        temp_path = f"uploads/{temp_filename}"
         out_filename = f"result_{os.path.splitext(file.filename)[0]}.mp4"
         out_path = f"uploads/{out_filename}"
 
@@ -68,8 +70,8 @@ async def upload(request: Request, file: UploadFile = File(...), filter_type: st
         fps = cap.get(cv2.CAP_PROP_FPS) or 20
         w = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
         h = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-        fourcc = cv2.VideoWriter_fourcc(*"avc1")
-        writer = cv2.VideoWriter(out_path, fourcc, fps, (w, h))
+        fourcc = cv2.VideoWriter_fourcc(*"mp4v")
+        writer = cv2.VideoWriter(temp_path, fourcc, fps, (w, h))
 
         while True:
             ret, frame = cap.read()
@@ -80,6 +82,17 @@ async def upload(request: Request, file: UploadFile = File(...), filter_type: st
 
         cap.release()
         writer.release()
+
+        import imageio_ffmpeg
+        import subprocess
+
+        ffmpeg_exe = imageio_ffmpeg.get_ffmpeg_exe()
+        subprocess.run([
+            ffmpeg_exe, "-y", "-i", temp_path,
+            "-vcodec", "libx264", "-pix_fmt", "yuv420p",
+            out_path
+        ], check=True)
+        os.remove(temp_path)
     else:
         out_filename = f"result_{file.filename}"
         out_path = f"uploads/{out_filename}"
