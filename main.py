@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Request, UploadFile, File, Form
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, StreamingResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 import cv2
@@ -105,3 +105,30 @@ async def upload(request: Request, file: UploadFile = File(...), filter_type: st
         "result": f"uploads/{out_filename}",
         "is_video": is_video
     })
+
+
+def gen_frames(filter_type):
+    cap = cv2.VideoCapture(0)
+    while True:
+        success, frame = cap.read()
+        if not success:
+            break
+        if filter_type and filter_type != "none":
+            processed = apply_filter_frame(frame, filter_type)
+        else:
+            processed = frame
+        ret, buffer = cv2.imencode(".jpg", processed)
+        frame_bytes = buffer.tobytes()
+        yield (b"--frame\r\n"
+               b"Content-Type: image/jpeg\r\n\r\n" + frame_bytes + b"\r\n")
+    cap.release()
+
+
+@app.get("/webcam", response_class=HTMLResponse)
+def webcam_page(request: Request):
+    return templates.TemplateResponse(request, "webcam.html")
+
+
+@app.get("/video_feed")
+def video_feed(filter_type: str = "none"):
+    return StreamingResponse(gen_frames(filter_type), media_type="multipart/x-mixed-replace; boundary=frame")

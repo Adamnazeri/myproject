@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Live Camera{% endblock %}
+{% block content %}
+<h1>🗿Live Camera 🗿</h1>
+
+<select id="filterSelect" onchange="updateFeed()">
+    <option value="none">No Filter</option>
+    <option value="grayscale">Grayscale</option>
+    <option value="sepia">Sepia</option>
+    <option value="cartoon">Cartoon</option>
+    <option value="invert">Invert</option>
+    <option value="blur">Blur</option>
+    <option value="yolo">Object Detection (AI)</option>
+    <option value="pose">Pose Detection (AI)</option>
+    <option value="removebg">Remove Background (AI)</option>
+</select>
+
+<br><br>
+<img id="camFeed" src="/video_feed?filter_type=none" width="500">
+
+<script>
+    function updateFeed() {
+        const filter = document.getElementById('filterSelect').value;
+        document.getElementById('camFeed').src = "/video_feed?filter_type=" + filter;
+    }
+</script>
+{% endblock %}
