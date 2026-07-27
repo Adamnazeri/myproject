@@ -4,7 +4,8 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 import cv2
 import os
-from ultralytics import YOLO
+from filter import Filter
+from camera import Camera
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -15,30 +16,8 @@ app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 VIDEO_EXT = (".mp4", ".mov", ".avi", ".mkv")
 
-yolo_model = YOLO("yolov8n.pt")
-
-
-def apply_filter_frame(img, filter_type):
-    if filter_type == "grayscale":
-        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        return cv2.cvtColor(gray, cv2.COLOR_GRAY2BGR)
-    elif filter_type == "sepia":
-        return cv2.applyColorMap(img, cv2.COLORMAP_PINK)
-    elif filter_type == "cartoon":
-        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        gray = cv2.medianBlur(gray, 5)
-        edges = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 9, 9)
-        color = cv2.bilateralFilter(img, 9, 250, 250)
-        return cv2.bitwise_and(color, color, mask=edges)
-    elif filter_type == "invert":
-        return cv2.bitwise_not(img)
-    elif filter_type == "blur":
-        return cv2.GaussianBlur(img, (25, 25), 0)
-    elif filter_type == "yolo":
-        results = yolo_model(img, verbose=False)
-        return results[0].plot()
-    else:
-        return img
+# Object — instance dicipta dari class Filter
+object = Filter()
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -53,6 +32,14 @@ def about(request: Request):
 
 @app.post("/", response_class=HTMLResponse)
 async def upload(request: Request, file: UploadFile = File(...), filter_type: str = Form(...)):
+    for old_file in os.listdir("uploads"):
+        old_path = os.path.join("uploads", old_file)
+        try:
+            if os.path.isfile(old_path):
+                os.remove(old_path)
+        except Exception as e:
+            print(f"Tak boleh padam {old_path}: {e}")
+
     path = f"uploads/{file.filename}"
     with open(path, "wb") as f:
         f.write(await file.read())
@@ -77,7 +64,7 @@ async def upload(request: Request, file: UploadFile = File(...), filter_type: st
             ret, frame = cap.read()
             if not ret:
                 break
-            processed = apply_filter_frame(frame, filter_type)
+            processed = object.filter(frame, filter_type)
             writer.write(processed)
 
         cap.release()
@@ -97,7 +84,7 @@ async def upload(request: Request, file: UploadFile = File(...), filter_type: st
         out_filename = f"result_{file.filename}"
         out_path = f"uploads/{out_filename}"
         img = cv2.imread(path)
-        result = apply_filter_frame(img, filter_type)
+        result = object.filter(img, filter_type)
         cv2.imwrite(out_path, result)
 
     return templates.TemplateResponse(request, "home.html", {
@@ -108,20 +95,20 @@ async def upload(request: Request, file: UploadFile = File(...), filter_type: st
 
 
 def gen_frames(filter_type):
-    cap = cv2.VideoCapture(0)
+    camera_object = Camera()
     while True:
-        success, frame = cap.read()
-        if not success:
+        frame = camera_object.get_frame()
+        if frame is None:
             break
         if filter_type and filter_type != "none":
-            processed = apply_filter_frame(frame, filter_type)
+            processed = object.filter(frame, filter_type)
         else:
             processed = frame
         ret, buffer = cv2.imencode(".jpg", processed)
         frame_bytes = buffer.tobytes()
         yield (b"--frame\r\n"
                b"Content-Type: image/jpeg\r\n\r\n" + frame_bytes + b"\r\n")
-    cap.release()
+    camera_object.release()
 
 
 @app.get("/webcam", response_class=HTMLResponse)
