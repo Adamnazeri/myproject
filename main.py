@@ -4,7 +4,6 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 import cv2  
 import os
-import threading
 from filter import Filter
 from camera import Camera
 
