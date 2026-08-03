@@ -1,8 +1,12 @@
 {% extends "base.html" %}
 {% block title %}Live Camera{% endblock %}
 {% block content %}
-<h1>🗿Live Camera 🗿</h1>
+<h1>📷 Live Camera</h1>
 
+<button id="startBtn" onclick="startCamera()">▶️ Start Camera</button>
+<button id="stopBtn" onclick="stopCamera()">⏹️ Stop Camera</button>
+
+<br><br>
 <select id="filterSelect" onchange="updateFeed()">
     <option value="none">No Filter</option>
     <option value="grayscale">Grayscale</option>
@@ -14,12 +18,22 @@
 </select>
 
 <br><br>
-<img id="camFeed" src="/video_feed?filter_type=none" width="500">
+<img id="camFeed" src="" width="500">
 
 <script>
+    async function startCamera() {
+        await fetch("/camera/start", { method: "POST" });
+        updateFeed();
+    }
+
+    async function stopCamera() {
+        await fetch("/camera/stop", { method: "POST" });
+        document.getElementById('camFeed').src = "";
+    }
+
     function updateFeed() {
         const filter = document.getElementById('filterSelect').value;
-        document.getElementById('camFeed').src = "/video_feed?filter_type=" + filter;
+        document.getElementById('camFeed').src = "/video_feed?filter_type=" + filter + "&t=" + Date.now();
     }
 </script>
 {% endblock %}

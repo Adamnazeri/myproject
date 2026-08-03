@@ -1,12 +1,12 @@
-import cv2                          # Import OpenCV untuk proses gambar/video
-from ultralytics import YOLO        # Import model YOLO untuk object detection
+import cv2
+from ultralytics import YOLO
 
 
-class Filter:                       # Blueprint untuk semua fungsi filter
-    def __init__(self):             # Constructor — jalan sekali bila object dicipta
-        self.yolo_model = YOLO("yolov8n.pt")   # Load model YOLO, simpan dalam object
+class Filter:
+    def __init__(self):
+        self.yolo_model = YOLO("yolov8n.pt")
 
-    def filter(self, img, filter_type):        # Method utama proses gambar
+    def filter(self, img, filter_type):
         if filter_type == "grayscale":
             gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
             return cv2.cvtColor(gray, cv2.COLOR_GRAY2BGR)

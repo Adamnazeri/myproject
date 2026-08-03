@@ -1,11 +1,12 @@
-from fastapi import FastAPI, Request, UploadFile, File, Form
+﻿from fastapi import FastAPI, Request, UploadFile, File, Form
 from fastapi.responses import HTMLResponse, StreamingResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 import cv2
 import os
-from filter import Filter           # Import class Filter dari filter.py
-from camera import Camera           # Import class Camera dari camera.py
+from filter import Filter
+from camera import Camera
+from threading import Threading
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -16,8 +17,8 @@ app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 VIDEO_EXT = (".mp4", ".mov", ".avi", ".mkv")
 
-# INITIALIZATION — cipta object dari class Filter (sekali sahaja)
 object = Filter()
+camera_instance = Camera()
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -32,7 +33,6 @@ def about(request: Request):
 
 @app.post("/", response_class=HTMLResponse)
 async def upload(request: Request, file: UploadFile = File(...), filter_type: str = Form(...)):
-    # Padam semua fail lama dalam folder uploads
     for old_file in os.listdir("uploads"):
         old_path = os.path.join("uploads", old_file)
         try:
@@ -65,7 +65,7 @@ async def upload(request: Request, file: UploadFile = File(...), filter_type: st
             ret, frame = cap.read()
             if not ret:
                 break
-            processed = object.filter(frame, filter_type)   # panggil method dari object Filter
+            processed = object.filter(frame, filter_type)
             writer.write(processed)
 
         cap.release()
@@ -85,7 +85,7 @@ async def upload(request: Request, file: UploadFile = File(...), filter_type: st
         out_filename = f"result_{file.filename}"
         out_path = f"uploads/{out_filename}"
         img = cv2.imread(path)
-        result = object.filter(img, filter_type)             # panggil method dari object Filter
+        result = object.filter(img, filter_type)
         cv2.imwrite(out_path, result)
 
     return templates.TemplateResponse(request, "home.html", {
@@ -95,10 +95,26 @@ async def upload(request: Request, file: UploadFile = File(...), filter_type: st
     })
 
 
+@app.get("/webcam", response_class=HTMLResponse)
+def webcam_page(request: Request):
+    return templates.TemplateResponse(request, "webcam.html", {"is_running": camera_instance.is_running})
+
+
+@app.post("/camera/start")
+def camera_start():
+    camera_instance.start()
+    return {"status": "started", "is_running": camera_instance.is_running}
+
+
+@app.post("/camera/stop")
+def camera_stop():
+    camera_instance.stop()
+    return {"status": "stopped", "is_running": camera_instance.is_running}
+
+
 def gen_frames(filter_type):
-    camera_object = Camera()          # cipta object baru dari class Camera
-    while True:
-        frame = camera_object.get_frame()    # panggil method get_frame
+    while camera_instance.is_running:
+        frame = camera_instance.get_frame()
         if frame is None:
             break
         if filter_type and filter_type != "none":
@@ -109,12 +125,6 @@ def gen_frames(filter_type):
         frame_bytes = buffer.tobytes()
         yield (b"--frame\r\n"
                b"Content-Type: image/jpeg\r\n\r\n" + frame_bytes + b"\r\n")
-    camera_object.release()           # panggil method release
-
-
-@app.get("/webcam", response_class=HTMLResponse)
-def webcam_page(request: Request):
-    return templates.TemplateResponse(request, "webcam.html")
 
 
 @app.get("/video_feed")
