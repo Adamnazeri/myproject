@@ -2,11 +2,12 @@
 from fastapi.responses import HTMLResponse, StreamingResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
-import cv2
+import cv2  
 import os
+import threading
 from filter import Filter
 from camera import Camera
-from threading import Threading
+
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
