@@ -1,11 +1,12 @@
-from fastapi import FastAPI, Request, UploadFile, File, Form
+﻿from fastapi import FastAPI, Request, UploadFile, File, Form
 from fastapi.responses import HTMLResponse, StreamingResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
-import cv2
+import cv2  
 import os
 from filter import Filter
 from camera import Camera
+
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -16,8 +17,8 @@ app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 VIDEO_EXT = (".mp4", ".mov", ".avi", ".mkv")
 
-# Object — instance dicipta dari class Filter
 object = Filter()
+camera_instance = Camera()
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -91,13 +92,30 @@ async def upload(request: Request, file: UploadFile = File(...), filter_type: st
         "raw": f"uploads/{file.filename}",
         "result": f"uploads/{out_filename}",
         "is_video": is_video
+        
     })
 
 
+@app.get("/webcam", response_class=HTMLResponse)
+def webcam_page(request: Request):
+    return templates.TemplateResponse(request, "webcam.html", {"is_running": camera_instance.is_running})
+
+
+@app.post("/camera/start")
+def camera_start():
+    camera_instance.start()
+    return {"status": "started", "is_running": camera_instance.is_running}
+
+
+@app.post("/camera/stop")
+def camera_stop():
+    camera_instance.stop()
+    return {"status": "stopped", "is_running": camera_instance.is_running}
+
+
 def gen_frames(filter_type):
-    camera_object = Camera()
-    while True:
-        frame = camera_object.get_frame()
+    while camera_instance.is_running:
+        frame = camera_instance.get_frame()
         if frame is None:
             break
         if filter_type and filter_type != "none":
@@ -108,12 +126,6 @@ def gen_frames(filter_type):
         frame_bytes = buffer.tobytes()
         yield (b"--frame\r\n"
                b"Content-Type: image/jpeg\r\n\r\n" + frame_bytes + b"\r\n")
-    camera_object.release()
-
-
-@app.get("/webcam", response_class=HTMLResponse)
-def webcam_page(request: Request):
-    return templates.TemplateResponse(request, "webcam.html")
 
 
 @app.get("/video_feed")
