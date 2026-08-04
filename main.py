@@ -92,6 +92,7 @@ async def upload(request: Request, file: UploadFile = File(...), filter_type: st
         "raw": f"uploads/{file.filename}",
         "result": f"uploads/{out_filename}",
         "is_video": is_video
+        
     })
 
 
