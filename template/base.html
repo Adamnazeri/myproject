@@ -2,16 +2,53 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    
     <link rel="stylesheet" href="/static/style.css">
     <title>{% block title %}Filter Studio{% endblock %}</title>
 </head>
 <body>
     <div class="sidebar">
-        <h2>🎨 Filter Studio</h2>
-        <a href="/">Home</a>
-        <a href="/webcam"> 🗿Live Camera</a>
-        <a href="/about">About</a>
+        <div class="brand">
+            <span class="brand-icon">🎨</span>
+            <span class="brand-name">Filter Studio</span>
+        </div>
+
+        {% if profile %}
+        <div class="profile-card">
+            <form id="picForm" action="/profile/upload_pic" method="post" enctype="multipart/form-data">
+                <label for="picInput" class="avatar-wrapper">
+                    <img class="avatar-img" src="/profile/pic/{{ profile.username }}?t={{ range(1,99999) | random }}"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <div class="avatar-fallback">{{ profile.username[0]|upper }}</div>
+                    <div class="avatar-overlay">✎</div>
+                </label>
+                <input type="file" id="picInput" name="pic" accept="image/*" style="display:none"
+                       onchange="document.getElementById('picForm').submit();">
+            </form>
+
+            <div class="profile-name">{{ profile.username }}</div>
+            <div class="profile-detail">
+                <span class="detail-label">ID</span>
+                <span class="detail-value">#{{ profile.id }}</span>
+            </div>
+            <div class="profile-detail">
+                <span class="detail-label">Phone</span>
+                <span class="detail-value">{{ profile.phone or "-" }}</span>
+            </div>
+            <div class="profile-detail">
+                <span class="detail-label">Dept</span>
+                <span class="detail-value">{{ profile.dept or "-" }}</span>
+            </div>
+        </div>
+        {% endif %}
+
+<nav class="nav-links">
+    <a href="/"><span class="nav-icon"></span> Home</a>
+    <a href="/webcam"><span class="nav-icon"></span> Live Camera</a>
+    <a href="/profile/edit"><span class="nav-icon"></span> Edit Profile</a>
+    <a href="/about"><span class="nav-icon"></span> About</a>
+</nav>
+
+        <a href="/logout" class="logout-btn"><span class="nav-icon">🚪</span> Logout</a>
     </div>
     <div class="content">
         {% block content %}{% endblock %}

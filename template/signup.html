@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Sign Up{% endblock %}
+{% block content %}
+<div class="auth-card">
+    <h1> Create New Account</h1>
+
+    {% if error %}
+    <div class="alert-error">{{ error }}</div>
+    {% endif %}
+
+    <form method="post" class="auth-form">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" placeholder="e.g. ahmad123" required minlength="3">
+
+        <label for="phone">Phone Number</label>
+        <input type="tel" id="phone" name="phone" placeholder="e.g. 0123456789" required>
+
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" placeholder="At least 6 characters" required minlength="6">
+
+        <label for="confirm_password">Confirm Password</label>
+        <input type="password" id="confirm_password" name="confirm_password" placeholder="Re-enter password" required minlength="6">
+
+        <label for="dept">Department</label>
+        <select id="dept" name="dept" required>
+            <option value="" disabled selected>-- Select Department --</option>
+            {% for d in departments %}
+            <option value="{{ d }}">{{ d }}</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit">Register</button>
+    </form>
+
+    <p class="auth-link">Already have an account? <a href="/login">Log in here</a></p>
+</div>
+{% endblock %}
