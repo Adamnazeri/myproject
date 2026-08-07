@@ -38,7 +38,9 @@ def get_profile(request: Request):
 
 @app.get("/signup", response_class=HTMLResponse)
 def signup_page(request: Request):
-    return templates.TemplateResponse(request, "signup.html", {"error": None, "departments": DEPARTMENTS})
+    return templates.TemplateResponse(request, "signup.html", {
+        "error": None, "departments": DEPARTMENTS, "show_sidebar": False
+    })
 
 
 @app.post("/signup", response_class=HTMLResponse)
@@ -46,33 +48,35 @@ def signup_submit(request: Request, username: str = Form(...), password: str = F
                    confirm_password: str = Form(...), phone: str = Form(...), dept: str = Form(...)):
     if len(username.strip()) < 3:
         return templates.TemplateResponse(request, "signup.html", {
-            "error": "Username must be at least 3 characters", "departments": DEPARTMENTS
+            "error": "Username must be at least 3 characters", "departments": DEPARTMENTS, "show_sidebar": False
         })
     if len(password) < 6:
         return templates.TemplateResponse(request, "signup.html", {
-            "error": "Password must be at least 6 characters", "departments": DEPARTMENTS
+            "error": "Password must be at least 6 characters", "departments": DEPARTMENTS, "show_sidebar": False
         })
     if password != confirm_password:
         return templates.TemplateResponse(request, "signup.html", {
-            "error": "Password and Confirm Password do not match", "departments": DEPARTMENTS
+            "error": "Password and Confirm Password do not match", "departments": DEPARTMENTS, "show_sidebar": False
         })
     if dept not in DEPARTMENTS:
         return templates.TemplateResponse(request, "signup.html", {
-            "error": "Please select a valid department", "departments": DEPARTMENTS
+            "error": "Please select a valid department", "departments": DEPARTMENTS, "show_sidebar": False
         })
 
     success = auth.register(username.strip(), password, phone.strip(), dept)
     if success:
         return RedirectResponse(url="/login?registered=1", status_code=303)
     return templates.TemplateResponse(request, "signup.html", {
-        "error": "Username already exists, please choose another", "departments": DEPARTMENTS
+        "error": "Username already exists, please choose another", "departments": DEPARTMENTS, "show_sidebar": False
     })
 
 
 @app.get("/login", response_class=HTMLResponse)
 def login_page(request: Request, registered: str = None):
     success_msg = "Registration successful! Please log in." if registered else None
-    return templates.TemplateResponse(request, "login.html", {"error": None, "success": success_msg})
+    return templates.TemplateResponse(request, "login.html", {
+        "error": None, "success": success_msg, "show_sidebar": False
+    })
 
 
 @app.post("/login", response_class=HTMLResponse)
@@ -81,7 +85,7 @@ def login_submit(request: Request, username: str = Form(...), password: str = Fo
         request.session["user"] = username
         return RedirectResponse(url="/", status_code=303)
     return templates.TemplateResponse(request, "login.html", {
-        "error": "Invalid username or password", "success": None
+        "error": "Invalid username or password", "success": None, "show_sidebar": False
     })
 
 

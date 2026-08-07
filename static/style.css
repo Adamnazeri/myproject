@@ -177,6 +177,13 @@ body {
     animation: fadeIn 0.4s ease;
 }
 
+.content.full-width {
+    margin-left: 0;
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
 .content h1 {
     font-size: 26px;
     margin-bottom: 6px;
@@ -352,7 +359,7 @@ img:hover { transform: scale(1.01); }
 }
 
 .calc-result {
-    background: white;
+    background: rgb(147, 56, 56);
     padding: 20px;
     border-radius: 16px;
     box-shadow: 0 6px 24px rgba(0,0,0,0.08);

@@ -5,7 +5,8 @@
     <link rel="stylesheet" href="/static/style.css">
     <title>{% block title %}Filter Studio{% endblock %}</title>
 </head>
-<body>
+<body class="{% if not show_sidebar|default(true) %}no-sidebar{% endif %}">
+    {% if show_sidebar|default(true) %}
     <div class="sidebar">
         <div class="brand">
             <span class="brand-icon">🎨</span>
@@ -55,7 +56,8 @@
 
         <a href="/logout" class="logout-btn"><span class="nav-icon">🚪</span> Logout</a>
     </div>
-    <div class="content">
+    {% endif %}
+    <div class="content{% if not show_sidebar|default(true) %} full-width{% endif %}">
         {% block content %}{% endblock %}
     </div>
 </body>
