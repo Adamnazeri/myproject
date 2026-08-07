@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Calculator{% endblock %}
+{% block content %}
+<h1>🧮 Calculator</h1>
+
+<form method="post" class="calc-form">
+    <input type="text" name="num1" placeholder="First number" value="{{ num1 or '' }}" required>
+
+    <select name="operator">
+        <option value="+" {% if operator == "+" %}selected{% endif %}>+ (Add)</option>
+        <option value="-" {% if operator == "-" %}selected{% endif %}>- (Subtract)</option>
+        <option value="*" {% if operator == "*" %}selected{% endif %}>* (Multiply)</option>
+        <option value="/" {% if operator == "/" %}selected{% endif %}>/ (Divide)</option>
+        <option value="//" {% if operator == "//" %}selected{% endif %}>// (Floor Divide)</option>
+    </select>
+
+    <input type="text" name="num2" placeholder="Second number" value="{{ num2 or '' }}" required>
+
+    <button type="submit">Calculate</button>
+</form>
+
+{% if result is not none %}
+<div class="calc-result">
+    <h2>Result</h2>
+    <p class="result-value">{{ num1 }} {{ operator }} {{ num2 }} = <strong>{{ result }}</strong></p>
+</div>
+{% endif %}
+{% endblock %}
