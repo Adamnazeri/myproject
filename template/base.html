@@ -39,15 +39,19 @@
                 <span class="detail-value">{{ profile.dept or "-" }}</span>
             </div>
         </div>
+        {% else %}
+        <div class="profile-card">
+            <p style="color:rgba(255,255,255,0.5); font-size:12px;">No profile loaded (not logged in?)</p>
+        </div>
         {% endif %}
 
-<nav class="nav-links">
-    <a href="/"><span class="nav-icon">🏠</span> Home</a>
-    <a href="/webcam"><span class="nav-icon">📷</span> Live Camera</a>
-    <a href="/calculator"><span class="nav-icon">🧮</span> Calculator</a>
-    <a href="/profile/edit"><span class="nav-icon">⚙️</span> Edit Profile</a>
-    <a href="/about"><span class="nav-icon">ℹ️</span> About</a>
-</nav>
+        <nav class="nav-links">
+            <a href="/"><span class="nav-icon">🏠</span> Home</a>
+            <a href="/webcam"><span class="nav-icon">📷</span> Live Camera</a>
+            <a href="/calculator"><span class="nav-icon">🧮</span> Calculator</a>
+            <a href="/profile/edit"><span class="nav-icon">⚙️</span> Edit Profile</a>
+            <a href="/about"><span class="nav-icon">ℹ️</span> About</a>
+        </nav>
 
         <a href="/logout" class="logout-btn"><span class="nav-icon">🚪</span> Logout</a>
     </div>

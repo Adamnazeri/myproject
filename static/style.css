@@ -17,7 +17,6 @@ body {
     color: #2a2a3a;
 }
 
-/* ===== SIDEBAR ===== */
 .sidebar {
     width: 240px;
     background: linear-gradient(160deg, var(--dark) 0%, var(--dark2) 100%);
@@ -28,6 +27,7 @@ body {
     display: flex;
     flex-direction: column;
     box-shadow: 4px 0 24px rgba(0,0,0,0.18);
+    overflow-y: auto;
 }
 
 .brand {
@@ -44,7 +44,6 @@ body {
     letter-spacing: 0.3px;
 }
 
-/* ===== PROFILE CARD ===== */
 .profile-card {
     background: rgba(255,255,255,0.06);
     border: 1px solid rgba(255,255,255,0.08);
@@ -105,6 +104,7 @@ body {
 .avatar-wrapper:hover .avatar-overlay {
     opacity: 1;
 }
+
 .profile-name {
     font-weight: 600;
     font-size: 15px;
@@ -130,7 +130,6 @@ body {
     text-align: right;
 }
 
-/* ===== NAV LINKS ===== */
 .nav-links {
     display: flex;
     flex-direction: column;
@@ -171,7 +170,6 @@ body {
     transform: translateX(3px);
 }
 
-/* ===== CONTENT ===== */
 .content {
     margin-left: 240px;
     padding: 40px;
@@ -188,7 +186,6 @@ body {
     color: transparent;
 }
 
-/* ===== FORMS ===== */
 form { margin-bottom: 24px; }
 
 input, select, button {
@@ -222,7 +219,6 @@ button:hover {
     box-shadow: 0 8px 18px rgba(91,140,255,0.35);
 }
 
-/* ===== MEDIA ===== */
 img, video {
     border-radius: 12px;
     margin: 10px 0;
@@ -232,7 +228,6 @@ img, video {
 
 img:hover { transform: scale(1.01); }
 
-/* ===== AUTH CARDS ===== */
 .auth-card {
     max-width: 420px;
     background: white;
@@ -309,17 +304,6 @@ img:hover { transform: scale(1.01); }
     border-left: 3px solid #1f9d55;
 }
 
-/* ===== ANIMATION ===== */
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(6px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-@media (max-width: 700px) {
-    .sidebar { display: none; }
-    .content { margin-left: 0; padding: 20px; }
-}
-
 .edit-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -350,9 +334,6 @@ img:hover { transform: scale(1.01); }
     width: 100%;
 }
 
-@media (max-width: 700px) {
-    .edit-grid { grid-template-columns: 1fr; }
-}
 .calc-form {
     display: flex;
     align-items: center;
@@ -388,4 +369,14 @@ img:hover { transform: scale(1.01); }
 .result-value {
     font-size: 22px;
     color: #333;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 700px) {
+    .sidebar { display: none; }
+    .content { margin-left: 0; padding: 20px; }
 }

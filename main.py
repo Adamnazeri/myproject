@@ -26,6 +26,7 @@ camera_instance = Camera()
 auth = Auth()
 calc = Calculator()
 
+
 def get_profile(request: Request):
     username = request.session.get("user")
     if not username:
@@ -183,6 +184,29 @@ def change_password_submit(request: Request, current_password: str = Form(...),
     })
 
 
+# ============ CALCULATOR ============
+
+@app.get("/calculator", response_class=HTMLResponse)
+def calculator_page(request: Request):
+    if not request.session.get("user"):
+        return RedirectResponse(url="/login", status_code=303)
+    return templates.TemplateResponse(request, "calculator.html", {
+        "result": None, "profile": get_profile(request)
+    })
+
+
+@app.post("/calculator", response_class=HTMLResponse)
+def calculator_submit(request: Request, num1: str = Form(...), num2: str = Form(...), operator: str = Form(...)):
+    if not request.session.get("user"):
+        return RedirectResponse(url="/login", status_code=303)
+
+    result = calc.calculate(num1, num2, operator)
+    return templates.TemplateResponse(request, "calculator.html", {
+        "result": result, "num1": num1, "num2": num2, "operator": operator,
+        "profile": get_profile(request)
+    })
+
+
 # ============ MAIN ROUTES (Protected) ============
 
 @app.get("/", response_class=HTMLResponse)
@@ -306,23 +330,3 @@ def gen_frames(filter_type):
 @app.get("/video_feed")
 def video_feed(filter_type: str = "none"):
     return StreamingResponse(gen_frames(filter_type), media_type="multipart/x-mixed-replace; boundary=frame")
-
-@app.get("/calculator", response_class=HTMLResponse)
-def calculator_page(request: Request):
-    if not request.session.get("user"):
-        return RedirectResponse(url="/login", status_code=303)
-    return templates.TemplateResponse(request, "calculator.html", {
-        "result": None, "profile": get_profile(request)
-    })
-
-
-@app.post("/calculator", response_class=HTMLResponse)
-def calculator_submit(request: Request, num1: str = Form(...), num2: str = Form(...), operator: str = Form(...)):
-    if not request.session.get("user"):
-        return RedirectResponse(url="/login", status_code=303)
-
-    result = calc.calculate(num1, num2, operator)
-    return templates.TemplateResponse(request, "calculator.html", {
-        "result": result, "num1": num1, "num2": num2, "operator": operator,
-        "profile": get_profile(request)
-    })
