@@ -101,7 +101,7 @@ class Auth:
             conn.commit()
             return True
         except sqlite3.IntegrityError:
-            return False   # new_username already taken by someone else
+            return False
         finally:
             conn.close()
 

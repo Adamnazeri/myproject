@@ -8,6 +8,7 @@
     --dark2: #23233f;
 }
 
+/* ===== DEFAULT LAYOUT (page dengan sidebar) ===== */
 body {
     margin: 0;
     display: flex;
@@ -17,7 +18,6 @@ body {
     color: #2a2a3a;
 }
 
-/* ===== SIDEBAR ===== */
 .sidebar {
     width: 240px;
     background: linear-gradient(160deg, var(--dark) 0%, var(--dark2) 100%);
@@ -28,6 +28,7 @@ body {
     display: flex;
     flex-direction: column;
     box-shadow: 4px 0 24px rgba(0,0,0,0.18);
+    overflow-y: auto;
 }
 
 .brand {
@@ -44,7 +45,6 @@ body {
     letter-spacing: 0.3px;
 }
 
-/* ===== PROFILE CARD ===== */
 .profile-card {
     background: rgba(255,255,255,0.06);
     border: 1px solid rgba(255,255,255,0.08);
@@ -105,6 +105,7 @@ body {
 .avatar-wrapper:hover .avatar-overlay {
     opacity: 1;
 }
+
 .profile-name {
     font-weight: 600;
     font-size: 15px;
@@ -130,7 +131,6 @@ body {
     text-align: right;
 }
 
-/* ===== NAV LINKS ===== */
 .nav-links {
     display: flex;
     flex-direction: column;
@@ -171,7 +171,6 @@ body {
     transform: translateX(3px);
 }
 
-/* ===== CONTENT ===== */
 .content {
     margin-left: 240px;
     padding: 40px;
@@ -188,7 +187,7 @@ body {
     color: transparent;
 }
 
-/* ===== FORMS ===== */
+/* ===== FORMS (sejagat) ===== */
 form { margin-bottom: 24px; }
 
 input, select, button {
@@ -222,7 +221,6 @@ button:hover {
     box-shadow: 0 8px 18px rgba(91,140,255,0.35);
 }
 
-/* ===== MEDIA ===== */
 img, video {
     border-radius: 12px;
     margin: 10px 0;
@@ -232,14 +230,34 @@ img, video {
 
 img:hover { transform: scale(1.01); }
 
-/* ===== AUTH CARDS ===== */
+/* ===== AUTH PAGES (login/signup — TANPA sidebar) ===== */
+body.auth-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e4ecf7 100%);
+    min-height: 100vh;
+    width: 100%;
+    margin: 0;
+    padding: 20px;
+}
+
+.auth-page {
+    width: 100%;
+    max-width: 460px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .auth-card {
+    width: 100%;
     max-width: 420px;
     background: white;
     border-radius: 18px;
     padding: 34px;
     box-shadow: 0 10px 40px rgba(0,0,0,0.08);
-    margin: 20px auto;
     animation: fadeIn 0.5s ease;
 }
 
@@ -274,6 +292,7 @@ img:hover { transform: scale(1.01); }
     margin-right: 0;
     padding: 13px;
     font-size: 15px;
+    width: 100%;
 }
 
 .auth-link {
@@ -309,17 +328,7 @@ img:hover { transform: scale(1.01); }
     border-left: 3px solid #1f9d55;
 }
 
-/* ===== ANIMATION ===== */
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(6px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-@media (max-width: 700px) {
-    .sidebar { display: none; }
-    .content { margin-left: 0; padding: 20px; }
-}
-
+/* ===== EDIT PROFILE ===== */
 .edit-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -350,6 +359,51 @@ img:hover { transform: scale(1.01); }
     width: 100%;
 }
 
+/* ===== CALCULATOR ===== */
+.calc-form {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    background: white;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.08);
+    max-width: 500px;
+}
+
+.calc-form input[type="text"] {
+    flex: 1;
+    min-width: 100px;
+}
+
+.calc-result {
+    background: white;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.08);
+    max-width: 500px;
+    margin-top: 20px;
+}
+
+.calc-result h2 {
+    margin-top: 0;
+    font-size: 15px;
+    color: #666;
+}
+
+.result-value {
+    font-size: 22px;
+    color: #333;
+}
+
+/* ===== ANIMATION ===== */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
 @media (max-width: 700px) {
-    .edit-grid { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .content { margin-left: 0; padding: 20px; }
 }

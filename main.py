@@ -7,7 +7,9 @@ import cv2
 import os
 from filter import Filter
 from camera import Camera
+from recording import Recording
 from auth import Auth, DEPARTMENTS
+from calculator import Calculator
 
 app = FastAPI()
 app.add_middleware(SessionMiddleware, secret_key="filterstudio2026secret")
@@ -22,7 +24,9 @@ VIDEO_EXT = (".mp4", ".mov", ".avi", ".mkv")
 
 object = Filter()
 camera_instance = Camera()
+recording_instance = Recording(camera_instance, object)
 auth = Auth()
+calc = Calculator()
 
 
 def get_profile(request: Request):
@@ -182,6 +186,29 @@ def change_password_submit(request: Request, current_password: str = Form(...),
     })
 
 
+# ============ CALCULATOR ============
+
+@app.get("/calculator", response_class=HTMLResponse)
+def calculator_page(request: Request):
+    if not request.session.get("user"):
+        return RedirectResponse(url="/login", status_code=303)
+    return templates.TemplateResponse(request, "calculator.html", {
+        "result": None, "profile": get_profile(request)
+    })
+
+
+@app.post("/calculator", response_class=HTMLResponse)
+def calculator_submit(request: Request, num1: str = Form(...), num2: str = Form(...), operator: str = Form(...)):
+    if not request.session.get("user"):
+        return RedirectResponse(url="/login", status_code=303)
+
+    result = calc.calculate(num1, num2, operator)
+    return templates.TemplateResponse(request, "calculator.html", {
+        "result": result, "num1": num1, "num2": num2, "operator": operator,
+        "profile": get_profile(request)
+    })
+
+
 # ============ MAIN ROUTES (Protected) ============
 
 @app.get("/", response_class=HTMLResponse)
@@ -285,6 +312,22 @@ def camera_start():
 def camera_stop():
     camera_instance.stop()
     return {"status": "stopped", "is_running": camera_instance.is_running}
+
+
+@app.post("/camera/record/start")
+def record_start(filter_type: str = Form("none")):
+    path = recording_instance.start(filter_type=filter_type)
+    if path is None:
+        return {"status": "error", "message": "Camera not running or already recording"}
+    return {"status": "recording", "path": path}
+
+
+@app.post("/camera/record/stop")
+def record_stop():
+    result_path = recording_instance.stop()
+    if result_path is None:
+        return {"status": "error", "message": "Not currently recording"}
+    return {"status": "stopped", "path": result_path}
 
 
 def gen_frames(filter_type):

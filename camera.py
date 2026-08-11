@@ -14,6 +14,9 @@ class Camera:
     def start(self):
         if not self.is_running:
             self.cam = cv2.VideoCapture(self.source, cv2.CAP_DSHOW)
+            if self.cam.isOpened():
+                self.cam.set(cv2.CAP_PROP_BUFFERSIZE, 1)
+                self.cam.set(cv2.CAP_PROP_FPS, 30)
             self.is_running = True
             self.thread = threading.Thread(target=self._capture_loop, daemon=True)
             self.thread.start()
