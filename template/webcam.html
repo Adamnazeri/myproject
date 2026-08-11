@@ -5,8 +5,12 @@
 
 <button id="startBtn" onclick="startCamera()">▶️ Start Camera</button>
 <button id="stopBtn" onclick="stopCamera()">⏹️ Stop Camera</button>
+<button id="recordBtn" onclick="startRecord()">🔴 Start Recording</button>
+<button id="stopRecordBtn" onclick="stopRecord()">⏸️ Stop Recording</button>
 
-<br><br>
+<p id="recordStatus"></p>
+
+<br>
 <select id="filterSelect" onchange="updateFeed()">
     <option value="none">No Filter</option>
     <option value="grayscale">Grayscale</option>
@@ -34,6 +38,32 @@
     function updateFeed() {
         const filter = document.getElementById('filterSelect').value;
         document.getElementById('camFeed').src = "/video_feed?filter_type=" + filter + "&t=" + Date.now();
+    }
+
+    async function startRecord() {
+        const filter = document.getElementById('filterSelect').value;
+        const body = new URLSearchParams({ filter_type: filter });
+        const res = await fetch("/camera/record/start", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body
+        });
+        const data = await res.json();
+        if (data.status === "recording") {
+            document.getElementById("recordStatus").innerText = "🔴 Recording...";
+        } else {
+            document.getElementById("recordStatus").innerText = "⚠️ " + data.message;
+        }
+    }
+
+    async function stopRecord() {
+        const res = await fetch("/camera/record/stop", { method: "POST" });
+        const data = await res.json();
+        if (data.status === "stopped") {
+            document.getElementById("recordStatus").innerText = "✅ Saved: " + data.path;
+        } else {
+            document.getElementById("recordStatus").innerText = "⚠️ " + data.message;
+        }
     }
 </script>
 {% endblock %}

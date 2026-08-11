@@ -8,6 +8,7 @@
     --dark2: #23233f;
 }
 
+/* ===== DEFAULT LAYOUT (page dengan sidebar) ===== */
 body {
     margin: 0;
     display: flex;
@@ -177,13 +178,6 @@ body {
     animation: fadeIn 0.4s ease;
 }
 
-.content.full-width {
-    margin-left: 0;
-    max-width: 760px;
-    margin: 0 auto;
-    padding: 40px 20px;
-}
-
 .content h1 {
     font-size: 26px;
     margin-bottom: 6px;
@@ -193,6 +187,7 @@ body {
     color: transparent;
 }
 
+/* ===== FORMS (sejagat) ===== */
 form { margin-bottom: 24px; }
 
 input, select, button {
@@ -235,13 +230,34 @@ img, video {
 
 img:hover { transform: scale(1.01); }
 
+/* ===== AUTH PAGES (login/signup — TANPA sidebar) ===== */
+body.auth-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e4ecf7 100%);
+    min-height: 100vh;
+    width: 100%;
+    margin: 0;
+    padding: 20px;
+}
+
+.auth-page {
+    width: 100%;
+    max-width: 460px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .auth-card {
+    width: 100%;
     max-width: 420px;
     background: white;
     border-radius: 18px;
     padding: 34px;
     box-shadow: 0 10px 40px rgba(0,0,0,0.08);
-    margin: 20px auto;
     animation: fadeIn 0.5s ease;
 }
 
@@ -276,6 +292,7 @@ img:hover { transform: scale(1.01); }
     margin-right: 0;
     padding: 13px;
     font-size: 15px;
+    width: 100%;
 }
 
 .auth-link {
@@ -311,6 +328,7 @@ img:hover { transform: scale(1.01); }
     border-left: 3px solid #1f9d55;
 }
 
+/* ===== EDIT PROFILE ===== */
 .edit-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -341,6 +359,7 @@ img:hover { transform: scale(1.01); }
     width: 100%;
 }
 
+/* ===== CALCULATOR ===== */
 .calc-form {
     display: flex;
     align-items: center;
@@ -359,7 +378,7 @@ img:hover { transform: scale(1.01); }
 }
 
 .calc-result {
-    background: rgb(147, 56, 56);
+    background: white;
     padding: 20px;
     border-radius: 16px;
     box-shadow: 0 6px 24px rgba(0,0,0,0.08);
@@ -378,6 +397,7 @@ img:hover { transform: scale(1.01); }
     color: #333;
 }
 
+/* ===== ANIMATION ===== */
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(6px); }
     to { opacity: 1; transform: translateY(0); }

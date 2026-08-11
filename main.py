@@ -7,6 +7,7 @@ import cv2
 import os
 from filter import Filter
 from camera import Camera
+from recording import Recording
 from auth import Auth, DEPARTMENTS
 from calculator import Calculator
 
@@ -23,6 +24,7 @@ VIDEO_EXT = (".mp4", ".mov", ".avi", ".mkv")
 
 object = Filter()
 camera_instance = Camera()
+recording_instance = Recording(camera_instance, object)
 auth = Auth()
 calc = Calculator()
 
@@ -38,9 +40,7 @@ def get_profile(request: Request):
 
 @app.get("/signup", response_class=HTMLResponse)
 def signup_page(request: Request):
-    return templates.TemplateResponse(request, "signup.html", {
-        "error": None, "departments": DEPARTMENTS, "show_sidebar": False
-    })
+    return templates.TemplateResponse(request, "signup.html", {"error": None, "departments": DEPARTMENTS})
 
 
 @app.post("/signup", response_class=HTMLResponse)
@@ -48,35 +48,33 @@ def signup_submit(request: Request, username: str = Form(...), password: str = F
                    confirm_password: str = Form(...), phone: str = Form(...), dept: str = Form(...)):
     if len(username.strip()) < 3:
         return templates.TemplateResponse(request, "signup.html", {
-            "error": "Username must be at least 3 characters", "departments": DEPARTMENTS, "show_sidebar": False
+            "error": "Username must be at least 3 characters", "departments": DEPARTMENTS
         })
     if len(password) < 6:
         return templates.TemplateResponse(request, "signup.html", {
-            "error": "Password must be at least 6 characters", "departments": DEPARTMENTS, "show_sidebar": False
+            "error": "Password must be at least 6 characters", "departments": DEPARTMENTS
         })
     if password != confirm_password:
         return templates.TemplateResponse(request, "signup.html", {
-            "error": "Password and Confirm Password do not match", "departments": DEPARTMENTS, "show_sidebar": False
+            "error": "Password and Confirm Password do not match", "departments": DEPARTMENTS
         })
     if dept not in DEPARTMENTS:
         return templates.TemplateResponse(request, "signup.html", {
-            "error": "Please select a valid department", "departments": DEPARTMENTS, "show_sidebar": False
+            "error": "Please select a valid department", "departments": DEPARTMENTS
         })
 
     success = auth.register(username.strip(), password, phone.strip(), dept)
     if success:
         return RedirectResponse(url="/login?registered=1", status_code=303)
     return templates.TemplateResponse(request, "signup.html", {
-        "error": "Username already exists, please choose another", "departments": DEPARTMENTS, "show_sidebar": False
+        "error": "Username already exists, please choose another", "departments": DEPARTMENTS
     })
 
 
 @app.get("/login", response_class=HTMLResponse)
 def login_page(request: Request, registered: str = None):
     success_msg = "Registration successful! Please log in." if registered else None
-    return templates.TemplateResponse(request, "login.html", {
-        "error": None, "success": success_msg, "show_sidebar": False
-    })
+    return templates.TemplateResponse(request, "login.html", {"error": None, "success": success_msg})
 
 
 @app.post("/login", response_class=HTMLResponse)
@@ -85,7 +83,7 @@ def login_submit(request: Request, username: str = Form(...), password: str = Fo
         request.session["user"] = username
         return RedirectResponse(url="/", status_code=303)
     return templates.TemplateResponse(request, "login.html", {
-        "error": "Invalid username or password", "success": None, "show_sidebar": False
+        "error": "Invalid username or password", "success": None
     })
 
 
@@ -314,6 +312,22 @@ def camera_start():
 def camera_stop():
     camera_instance.stop()
     return {"status": "stopped", "is_running": camera_instance.is_running}
+
+
+@app.post("/camera/record/start")
+def record_start(filter_type: str = Form("none")):
+    path = recording_instance.start(filter_type=filter_type)
+    if path is None:
+        return {"status": "error", "message": "Camera not running or already recording"}
+    return {"status": "recording", "path": path}
+
+
+@app.post("/camera/record/stop")
+def record_stop():
+    result_path = recording_instance.stop()
+    if result_path is None:
+        return {"status": "error", "message": "Not currently recording"}
+    return {"status": "stopped", "path": result_path}
 
 
 def gen_frames(filter_type):
