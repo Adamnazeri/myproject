@@ -29,7 +29,7 @@ class Recording:
         os.makedirs(folder, exist_ok=True)
         return folder
 
-    def start(self, fps=20, filter_type="none"):
+    def start(self, fps=30, filter_type="none"):
         with self.lock:
             if self.is_recording:
                 return None

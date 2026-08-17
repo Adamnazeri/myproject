@@ -34,7 +34,7 @@
         await fetch("/camera/stop", { method: "POST" });
         document.getElementById('camFeed').src = "";
     }
-
+   //tempat preview
     function updateFeed() {
         const filter = document.getElementById('filterSelect').value;
         document.getElementById('camFeed').src = "/video_feed?filter_type=" + filter + "&t=" + Date.now();

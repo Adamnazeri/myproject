@@ -16,7 +16,7 @@ def init_db():
             password TEXT NOT NULL,
             phone TEXT,
             dept TEXT,
-            profile_pic BLOB
+            profile_pic BLOB                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
         )
     """)
     conn.commit()
